@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+<html>
+<head> 
+	<title>LA_Water</title>
+	
+	<meta charset="utf-8" />
+	<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" /> <!-- we will us e this as the styling script for our webmap-->
+	<link rel="stylesheet" href="css/MarkerCluster.css" />
+	<link rel="stylesheet" href="css/MarkerCluster.Default.css" />
+	<link rel="stylesheet" type="text/css" href="css/own_style.css">
+	<link rel="stylesheet" href="css/label.css" />
+	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script> <!-- this is the javascript file that does the magic-->
+	<script src="js/Autolinker.min.js"></script>
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+</head>
+<body>
+	<div id="map"></div> <!-- this is the initial look of the map. in most cases it is done externally using something like a map.css stylesheet were you can specify the look of map elements, like background color tables and so on.-->
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script> <!-- this is the javascript file that does the magic-->
+	<script src="js/leaflet-hash.js"></script>
+	<script src="js/label.js"></script>
+	<script src="js/leaflet.markercluster.js"></script>
+	
+				<script src='data/exp_Flowline.js' ></script>
+				
+				<script src='data/exp_Reservoirs.js' ></script>
+				
+				<script src='data/exp_Waterbody.js' ></script>
+				
+	<script>
+		var map = L.map('map', { zoomControl:true }).fitBounds([[34.4568622475,-118.556236766],[34.9178755475,-117.628584501]]);
+		var hash = new L.Hash(map); //add hashes to html address to easy share locations
+		var additional_attrib = 'created w. <a href="https://github.com/geolicious/qgis2leaf" target ="_blank">qgis2leaf</a> by <a href="http://www.geolicious.de" target ="_blank">Geolicious</a> & contributors<br>';
+	var feature_group = new L.featureGroup([]);
+
+	var raster_group = new L.LayerGroup([]);
+	
+		var basemap_0 = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
+			attribution: additional_attrib + '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors,<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'});	
+		basemap_0.addTo(map);
+		var basemap_1 = L.tileLayer('http://a.tile.stamen.com/toner/{z}/{x}/{y}.png', { 
+			attribution: additional_attrib + 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data: &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors,<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'});
+		var basemap_2 = L.tileLayer('http://otile1.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.jpg', { 
+			attribution: additional_attrib + 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Portions Courtesy NASA/JPL-Caltech and U.S. Depart. of Agriculture, Farm Service Agency'});	
+	var layerOrder=new Array();
+							function pop_Waterbody(feature, layer) {
+										
+	var popupContent = '<table><tr><th scope="row">OBJECTID</th><td>' + Autolinker.link(String(feature.properties['OBJECTID'])) + '</td></tr><tr><th scope="row">COMID</th><td>' + Autolinker.link(String(feature.properties['COMID'])) + '</td></tr><tr><th scope="row">PERMANENT_</th><td>' + Autolinker.link(String(feature.properties['PERMANENT_'])) + '</td></tr><tr><th scope="row">FDATE</th><td>' + Autolinker.link(String(feature.properties['FDATE'])) + '</td></tr><tr><th scope="row">RESOLUTION</th><td>' + Autolinker.link(String(feature.properties['RESOLUTION'])) + '</td></tr><tr><th scope="row">GNIS_ID</th><td>' + Autolinker.link(String(feature.properties['GNIS_ID'])) + '</td></tr><tr><th scope="row">GNIS_NAME</th><td>' + Autolinker.link(String(feature.properties['GNIS_NAME'])) + '</td></tr><tr><th scope="row">AREASQKM</th><td>' + Autolinker.link(String(feature.properties['AREASQKM'])) + '</td></tr><tr><th scope="row">ELEVATION</th><td>' + Autolinker.link(String(feature.properties['ELEVATION'])) + '</td></tr><tr><th scope="row">REACHCODE</th><td>' + Autolinker.link(String(feature.properties['REACHCODE'])) + '</td></tr><tr><th scope="row">FTYPE</th><td>' + Autolinker.link(String(feature.properties['FTYPE'])) + '</td></tr><tr><th scope="row">FCODE</th><td>' + Autolinker.link(String(feature.properties['FCODE'])) + '</td></tr><tr><th scope="row">DESCRIPTIO</th><td>' + Autolinker.link(String(feature.properties['DESCRIPTIO'])) + '</td></tr><tr><th scope="row">CANALDITCH</th><td>' + Autolinker.link(String(feature.properties['CANALDITCH'])) + '</td></tr><tr><th scope="row">CONSTRUCTI</th><td>' + Autolinker.link(String(feature.properties['CONSTRUCTI'])) + '</td></tr><tr><th scope="row">HYDROGRAPH</th><td>' + Autolinker.link(String(feature.properties['HYDROGRAPH'])) + '</td></tr><tr><th scope="row">INUNDATION</th><td>' + Autolinker.link(String(feature.properties['INUNDATION'])) + '</td></tr><tr><th scope="row">OPERATIONA</th><td>' + Autolinker.link(String(feature.properties['OPERATIONA'])) + '</td></tr><tr><th scope="row">PIPELINETY</th><td>' + Autolinker.link(String(feature.properties['PIPELINETY'])) + '</td></tr><tr><th scope="row">POSITIONAL</th><td>' + Autolinker.link(String(feature.properties['POSITIONAL'])) + '</td></tr><tr><th scope="row">RELATIONSH</th><td>' + Autolinker.link(String(feature.properties['RELATIONSH'])) + '</td></tr><tr><th scope="row">RESERVOIRT</th><td>' + Autolinker.link(String(feature.properties['RESERVOIRT'])) + '</td></tr><tr><th scope="row">STAGE</th><td>' + Autolinker.link(String(feature.properties['STAGE'])) + '</td></tr><tr><th scope="row">SPECIALUSE</th><td>' + Autolinker.link(String(feature.properties['SPECIALUSE'])) + '</td></tr></table>';
+	layer.bindPopup(popupContent);
+
+
+				}
+						
+				var exp_WaterbodyJSON = new L.geoJson(exp_Waterbody,{
+					onEachFeature: pop_Waterbody,
+					style: function (feature) {
+						return {color: feature.properties.border_color_qgis2leaf,
+								fillColor: feature.properties.color_qgis2leaf,
+								weight: feature.properties.radius_qgis2leaf,
+								dashArray: feature.properties.border_style_qgis2leaf,
+								opacity: feature.properties.transp_qgis2leaf,
+								fillOpacity: feature.properties.transp_fill_qgis2leaf};
+						}
+					});
+				feature_group.addLayer(exp_WaterbodyJSON);
+				layerOrder[layerOrder.length] = exp_WaterbodyJSON;
+				for (index = 0; index < layerOrder.length; index++) {
+					feature_group.removeLayer(layerOrder[index]);feature_group.addLayer(layerOrder[index]);
+				}
+				
+						//add comment sign to hide this layer on the map in the initial view.
+						exp_WaterbodyJSON.addTo(map);
+							function pop_Reservoirs(feature, layer) {
+										
+	var popupContent = '<table><tr><th scope="row">OBJECTID</th><td>' + Autolinker.link(String(feature.properties['OBJECTID'])) + '</td></tr><tr><th scope="row">COMID</th><td>' + Autolinker.link(String(feature.properties['COMID'])) + '</td></tr><tr><th scope="row">PERMANENT_</th><td>' + Autolinker.link(String(feature.properties['PERMANENT_'])) + '</td></tr><tr><th scope="row">FDATE</th><td>' + Autolinker.link(String(feature.properties['FDATE'])) + '</td></tr><tr><th scope="row">RESOLUTION</th><td>' + Autolinker.link(String(feature.properties['RESOLUTION'])) + '</td></tr><tr><th scope="row">GNIS_ID</th><td>' + Autolinker.link(String(feature.properties['GNIS_ID'])) + '</td></tr><tr><th scope="row">GNIS_NAME</th><td>' + Autolinker.link(String(feature.properties['GNIS_NAME'])) + '</td></tr><tr><th scope="row">REACHCODE</th><td>' + Autolinker.link(String(feature.properties['REACHCODE'])) + '</td></tr><tr><th scope="row">FTYPE</th><td>' + Autolinker.link(String(feature.properties['FTYPE'])) + '</td></tr><tr><th scope="row">FCODE</th><td>' + Autolinker.link(String(feature.properties['FCODE'])) + '</td></tr><tr><th scope="row">DESCRIPTIO</th><td>' + Autolinker.link(String(feature.properties['DESCRIPTIO'])) + '</td></tr><tr><th scope="row">CANALDITCH</th><td>' + Autolinker.link(String(feature.properties['CANALDITCH'])) + '</td></tr><tr><th scope="row">CONSTRUCTI</th><td>' + Autolinker.link(String(feature.properties['CONSTRUCTI'])) + '</td></tr><tr><th scope="row">HYDROGRAPH</th><td>' + Autolinker.link(String(feature.properties['HYDROGRAPH'])) + '</td></tr><tr><th scope="row">INUNDATION</th><td>' + Autolinker.link(String(feature.properties['INUNDATION'])) + '</td></tr><tr><th scope="row">OPERATIONA</th><td>' + Autolinker.link(String(feature.properties['OPERATIONA'])) + '</td></tr><tr><th scope="row">PIPELINETY</th><td>' + Autolinker.link(String(feature.properties['PIPELINETY'])) + '</td></tr><tr><th scope="row">POSITIONAL</th><td>' + Autolinker.link(String(feature.properties['POSITIONAL'])) + '</td></tr><tr><th scope="row">RELATIONSH</th><td>' + Autolinker.link(String(feature.properties['RELATIONSH'])) + '</td></tr><tr><th scope="row">RESERVOIRT</th><td>' + Autolinker.link(String(feature.properties['RESERVOIRT'])) + '</td></tr><tr><th scope="row">STAGE</th><td>' + Autolinker.link(String(feature.properties['STAGE'])) + '</td></tr><tr><th scope="row">SPECIALUSE</th><td>' + Autolinker.link(String(feature.properties['SPECIALUSE'])) + '</td></tr></table>';
+	layer.bindPopup(popupContent);
+
+
+				}
+						
+				var exp_ReservoirsJSON = new L.geoJson(exp_Reservoirs,{
+					onEachFeature: pop_Reservoirs,
+					pointToLayer: function (feature, latlng) {  
+						return L.circleMarker(latlng, {
+							radius: feature.properties.radius_qgis2leaf,
+							fillColor: feature.properties.color_qgis2leaf,
+
+							color: feature.properties.borderColor_qgis2leaf,
+							weight: 1,
+							opacity: feature.properties.transp_qgis2leaf,
+							fillOpacity: feature.properties.transp_qgis2leaf
+							})
+						}
+					});
+								feature_group.addLayer(exp_ReservoirsJSON);
+
+				layerOrder[layerOrder.length] = exp_ReservoirsJSON;
+				for (index = 0; index < layerOrder.length; index++) {
+					feature_group.removeLayer(layerOrder[index]);feature_group.addLayer(layerOrder[index]);
+				}
+				
+						//add comment sign to hide this layer on the map in the initial view.
+						exp_ReservoirsJSON.addTo(map);
+							function pop_Flowline(feature, layer) {
+										
+	var popupContent = '<table><tr><th scope="row">OBJECTID</th><td>' + Autolinker.link(String(feature.properties['OBJECTID'])) + '</td></tr><tr><th scope="row">COMID</th><td>' + Autolinker.link(String(feature.properties['COMID'])) + '</td></tr><tr><th scope="row">PERMANENT_</th><td>' + Autolinker.link(String(feature.properties['PERMANENT_'])) + '</td></tr><tr><th scope="row">FDATE</th><td>' + Autolinker.link(String(feature.properties['FDATE'])) + '</td></tr><tr><th scope="row">RESOLUTION</th><td>' + Autolinker.link(String(feature.properties['RESOLUTION'])) + '</td></tr><tr><th scope="row">GNIS_ID</th><td>' + Autolinker.link(String(feature.properties['GNIS_ID'])) + '</td></tr><tr><th scope="row">GNIS_NAME</th><td>' + Autolinker.link(String(feature.properties['GNIS_NAME'])) + '</td></tr><tr><th scope="row">LENGTHKM</th><td>' + Autolinker.link(String(feature.properties['LENGTHKM'])) + '</td></tr><tr><th scope="row">REACHCODE</th><td>' + Autolinker.link(String(feature.properties['REACHCODE'])) + '</td></tr><tr><th scope="row">FLOWDIR</th><td>' + Autolinker.link(String(feature.properties['FLOWDIR'])) + '</td></tr><tr><th scope="row">WBAREACOMI</th><td>' + Autolinker.link(String(feature.properties['WBAREACOMI'])) + '</td></tr><tr><th scope="row">WBAREA_PER</th><td>' + Autolinker.link(String(feature.properties['WBAREA_PER'])) + '</td></tr><tr><th scope="row">FTYPE</th><td>' + Autolinker.link(String(feature.properties['FTYPE'])) + '</td></tr><tr><th scope="row">FCODE</th><td>' + Autolinker.link(String(feature.properties['FCODE'])) + '</td></tr><tr><th scope="row">SHAPE_LENG</th><td>' + Autolinker.link(String(feature.properties['SHAPE_LENG'])) + '</td></tr><tr><th scope="row">ENABLED</th><td>' + Autolinker.link(String(feature.properties['ENABLED'])) + '</td></tr><tr><th scope="row">DESCRIPTIO</th><td>' + Autolinker.link(String(feature.properties['DESCRIPTIO'])) + '</td></tr><tr><th scope="row">CANALDITCH</th><td>' + Autolinker.link(String(feature.properties['CANALDITCH'])) + '</td></tr><tr><th scope="row">CONSTRUCTI</th><td>' + Autolinker.link(String(feature.properties['CONSTRUCTI'])) + '</td></tr><tr><th scope="row">HYDROGRAPH</th><td>' + Autolinker.link(String(feature.properties['HYDROGRAPH'])) + '</td></tr><tr><th scope="row">INUNDATION</th><td>' + Autolinker.link(String(feature.properties['INUNDATION'])) + '</td></tr><tr><th scope="row">OPERATIONA</th><td>' + Autolinker.link(String(feature.properties['OPERATIONA'])) + '</td></tr><tr><th scope="row">PIPELINETY</th><td>' + Autolinker.link(String(feature.properties['PIPELINETY'])) + '</td></tr><tr><th scope="row">POSITIONAL</th><td>' + Autolinker.link(String(feature.properties['POSITIONAL'])) + '</td></tr><tr><th scope="row">RELATIONSH</th><td>' + Autolinker.link(String(feature.properties['RELATIONSH'])) + '</td></tr><tr><th scope="row">RESERVOIRT</th><td>' + Autolinker.link(String(feature.properties['RESERVOIRT'])) + '</td></tr><tr><th scope="row">STAGE</th><td>' + Autolinker.link(String(feature.properties['STAGE'])) + '</td></tr><tr><th scope="row">SPECIALUSE</th><td>' + Autolinker.link(String(feature.properties['SPECIALUSE'])) + '</td></tr></table>';
+	layer.bindPopup(popupContent);
+
+
+				}
+						
+				var exp_FlowlineJSON = new L.geoJson(exp_Flowline,{
+					onEachFeature: pop_Flowline,
+					style: function (feature) {
+						return {weight: feature.properties.radius_qgis2leaf,
+								color: feature.properties.color_qgis2leaf,
+								dashArray: feature.properties.pen_style_qgis2leaf,
+								opacity: feature.properties.transp_qgis2leaf,
+								fillOpacity: feature.properties.transp_qgis2leaf};
+						}
+					});
+				feature_group.addLayer(exp_FlowlineJSON);
+				layerOrder[layerOrder.length] = exp_FlowlineJSON;
+				for (index = 0; index < layerOrder.length; index++) {
+					feature_group.removeLayer(layerOrder[index]);feature_group.addLayer(layerOrder[index]);
+				}
+				
+						//add comment sign to hide this layer on the map in the initial view.
+						exp_FlowlineJSON.addTo(map);
+	var baseMaps = {
+		'OSM Standard': basemap_0,
+		'Stamen Toner': basemap_1,
+		'MapQuestOpen Aerial': basemap_2};
+	L.control.layers(baseMaps,{"Flowline": exp_FlowlineJSON,"Reservoirs": exp_ReservoirsJSON,"Waterbody": exp_WaterbodyJSON},{collapsed:false}).addTo(map);
+	L.control.scale({options: {position: 'bottomleft',maxWidth: 100,metric: true,imperial: false,updateWhenIdle: false}}).addTo(map);
+	</script>
+</body>
+</html>
+	
